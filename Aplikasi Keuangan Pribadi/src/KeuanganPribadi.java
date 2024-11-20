@@ -8,6 +8,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -30,7 +31,8 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         // Memanggil metode `tampil_jam` untuk menampilkan jam saat ini di UI, memastikan informasi waktu selalu diperbarui.
         tampil_jam();
     }
-    
+   
+        
     public void hapus() {
         // Mengosongkan field input untuk Nama Transaksi, sehingga siap untuk diisi dengan data baru.
         txtNamaTransaksi.setText("");
@@ -178,7 +180,7 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         jPanel1.add(txtNominal, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 180, 371, -1));
 
         comboJenisTransaksi.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        comboJenisTransaksi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pemasukan", "Pengeluaran" }));
+        comboJenisTransaksi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih --", "Pemasukan", "Pengeluaran" }));
         comboJenisTransaksi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboJenisTransaksiActionPerformed(evt);
@@ -309,10 +311,10 @@ public class KeuanganPribadi extends javax.swing.JFrame {
 
     private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
              // Konfirmasi sebelum keluar aplikasi
-        int confirm = JOptionPane.showConfirmDialog(null, "Apakah Anda yakin ingin keluar?", "Konfirmasi Keluar", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            System.exit(0); // Menutup aplikasi
-        }        // TODO add your handling code here:
+            int confirm = JOptionPane.showConfirmDialog(null, "Apakah Anda yakin ingin keluar?", "Konfirmasi Keluar", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                System.exit(0); // Menutup aplikasi
+            }        // TODO add your handling code here:
     }//GEN-LAST:event_btnKeluarActionPerformed
 
     private void btnExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportActionPerformed
@@ -367,55 +369,67 @@ public class KeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExportActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
-            // Mendapatkan model tabel yang digunakan untuk mengelola data
-            DefaultTableModel model = (DefaultTableModel) tabel.getModel();
+        // Mendapatkan model tabel yang digunakan untuk mengelola data
+        DefaultTableModel model = (DefaultTableModel) tabel.getModel();
 
-            // Mendapatkan indeks baris yang dipilih di tabel
-            int selectedRow = tabel.getSelectedRow(); // Mengambil indeks baris yang dipilih oleh pengguna
+        // Mendapatkan indeks baris yang dipilih di tabel
+        int selectedRow = tabel.getSelectedRow(); // Mengambil indeks baris yang dipilih oleh pengguna
 
-            // Mengecek apakah ada kolom yang kosong
-            if (txtNamaTransaksi.getText().trim().equals("") || dateChooser.getDate() == null 
-                || comboJenisTransaksi.getSelectedItem() == null || txtNominal.getText().trim().equals("") 
-                || areaKeterangan.getText().trim().equals("")) {
+        // Mengecek apakah ada kolom yang kosong
+        if (txtNamaTransaksi.getText().trim().equals("") || dateChooser.getDate() == null 
+            || comboJenisTransaksi.getSelectedItem() == null || txtNominal.getText().trim().equals("") 
+            || areaKeterangan.getText().trim().equals("")) {
 
-                // Jika ada kolom yang kosong, tampilkan pesan peringatan
-                JOptionPane.showMessageDialog(null, "Data Yang Anda Masukkan Belum Lengkap! Silahkan Ulangi Lagi!");
+            // Validasi khusus jika kategori resep belum dipilih
+            if (comboJenisTransaksi.getSelectedItem().toString().equals("-- Pilih --")) {
+                JOptionPane.showMessageDialog(null, "Silakan pilih jenis transaksi terlebih dahulu!");
             } else {
-                // Jika ada baris yang dipilih (edit mode)
-                if (selectedRow != -1) {
-                    // Mengubah data pada baris yang dipilih
-                    model.setValueAt(txtNamaTransaksi.getText(), selectedRow, 0);          // Kolom 1: Nama Transaksi
-                    model.setValueAt(dateChooser.getDate(), selectedRow, 1);              // Kolom 2: Tanggal
-                    model.setValueAt(comboJenisTransaksi.getSelectedItem().toString(), selectedRow, 2); // Kolom 3: Jenis Transaksi
-                    model.setValueAt(txtNominal.getText(), selectedRow, 3);                // Kolom 4: Nominal
-                    model.setValueAt(areaKeterangan.getText(), selectedRow, 4);             // Kolom 5: Keterangan
+                // Jika ada kolom lainnya yang kosong, tampilkan pesan peringatan
+                JOptionPane.showMessageDialog(null, "Data Yang Anda Masukkan Belum Lengkap! Silahkan Ulangi Lagi!");
+            }
+        } else {
+            // Jika ada baris yang dipilih (edit mode)
+            if (selectedRow != -1) {
+                // Mengubah data pada baris yang dipilih
+                model.setValueAt(txtNamaTransaksi.getText(), selectedRow, 0);          // Kolom 1: Nama Transaksi
+                model.setValueAt(dateChooser.getDate(), selectedRow, 1);              // Kolom 2: Tanggal
+                model.setValueAt(comboJenisTransaksi.getSelectedItem().toString(), selectedRow, 2); // Kolom 3: Jenis Transaksi
+                model.setValueAt(txtNominal.getText(), selectedRow, 3);                // Kolom 4: Nominal
+                model.setValueAt(areaKeterangan.getText(), selectedRow, 4);             // Kolom 5: Keterangan
 
-                    // Menampilkan pesan konfirmasi bahwa data keuangan berhasil diubah
-                    JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Diubah");
-                } else {
-                    // Jika tidak ada baris yang dipilih, tambahkan baris baru
-                    model.addRow(new Object[]{
-                        txtNamaTransaksi.getText(), // Menambahkan Nama Transaksi
-                        dateChooser.getDate(),      // Menambahkan Tanggal
-                        comboJenisTransaksi.getSelectedItem().toString(), // Menambahkan Jenis Transaksi
-                        txtNominal.getText(),       // Menambahkan Nominal
-                        areaKeterangan.getText()    // Menambahkan Keterangan
-                    });
+                // Menampilkan pesan konfirmasi bahwa data keuangan berhasil diubah
+                JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Diubah");
+            } else {
+                // Jika tidak ada baris yang dipilih, tambahkan baris baru
+                model.addRow(new Object[]{
+                    txtNamaTransaksi.getText(), // Menambahkan Nama Transaksi
+                    dateChooser.getDate(),      // Menambahkan Tanggal
+                    comboJenisTransaksi.getSelectedItem().toString(), // Menambahkan Jenis Transaksi
+                    txtNominal.getText(),       // Menambahkan Nominal
+                    areaKeterangan.getText()    // Menambahkan Keterangan
+                });
 
-                    // Menampilkan pesan konfirmasi bahwa data keuangan berhasil disimpan
-                    JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Disimpan");
-                }
+                // Menampilkan pesan konfirmasi bahwa data keuangan berhasil disimpan
+                JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Disimpan");
+            }
 
-                // Menghapus data yang ada di form setelah data dimasukkan ke tabel
-                hapus(); // Fungsi hapus() mengatur ulang form, membersihkan semua input pengguna
-}
+            // Menghapus data yang ada di form setelah data dimasukkan ke tabel
+            hapus(); // Fungsi hapus() mengatur ulang form, membersihkan semua input pengguna
+        }
+
+
+
         // TODO add your handling code here:
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void btnBatalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBatalActionPerformed
         hapus();// Fungsi hapus() mengatur ulang form, membersihkan semua input pengguna
+        
+        // Membatalkan semua pemilihan pada tabel
+        tabel.clearSelection();
         // TODO add your handling code here:
     }//GEN-LAST:event_btnBatalActionPerformed
+
 
     private void btnUbahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahActionPerformed
             // Mendapatkan model tabel yang digunakan untuk mengelola data
@@ -463,7 +477,6 @@ public class KeuanganPribadi extends javax.swing.JFrame {
                 // Jika tidak ada baris yang dipilih (indeks -1), tampilkan pesan peringatan
                 JOptionPane.showMessageDialog(null, "Pilih baris yang ingin diubah terlebih dahulu!");
             }
-
           // TODO add your handling code here:
     }//GEN-LAST:event_btnUbahActionPerformed
 
