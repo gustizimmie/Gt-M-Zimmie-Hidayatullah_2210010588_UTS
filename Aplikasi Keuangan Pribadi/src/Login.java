@@ -131,7 +131,7 @@ public class Login extends javax.swing.JFrame {
             String username = txtUser.getText();
             String password = String.valueOf(txtPass.getPassword());
 
-            if (username.equals("admin") && password.equals("1234")) {
+            if (username.equals("admin") && password.equals("admin")) {
                 JOptionPane.showMessageDialog(this, "Login Berhasil");
                 new KeuanganPribadi().setVisible(true);  // Membuka frame aplikasi keuangan pribadi setelah login berhasil
                 dispose();  // Menutup frame login

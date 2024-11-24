@@ -1,5 +1,4 @@
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import javax.swing.*;
@@ -7,6 +6,9 @@ import javax.swing.table.DefaultTableModel;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /*
@@ -49,61 +51,39 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         // Mengosongkan text area Keterangan, sehingga siap untuk diisi dengan informasi baru.
         areaKeterangan.setText("");
     }
-    public void tampil_tanggal(){
-                 // Mendapatkan tanggal sekarang
-                java.util.Date tanggalSekarang = new java.util.Date();
-                
-                // Menentukan format tanggal
-                SimpleDateFormat formatTanggal = new SimpleDateFormat("dd-MM-yyyy");
-                
-                // Mengonversi tanggal menjadi String
-                String tanggal = formatTanggal.format(tanggalSekarang);
-                
-                // Menampilkan tanggal sekarang pada dateChooser
-                dateChooser.setDate(tanggalSekarang);
-                
-                // Menampilkan tanggal di label tanggal
-                lbTanggal.setText("Tanggal : " + tanggal);
-          
+    public void tampil_tanggal() {
+            // Mendapatkan tanggal sekarang
+            LocalDate tanggalSekarang = LocalDate.now();
+
+            // Menentukan format tanggal
+            DateTimeFormatter formatTanggal = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            // Mengonversi tanggal menjadi String
+            String tanggal = tanggalSekarang.format(formatTanggal);
+
+            // Menampilkan tanggal sekarang pada dateChooser
+            dateChooser.setDate(java.sql.Date.valueOf(tanggalSekarang));
+
+            // Menampilkan tanggal di label tanggal
+            lbTanggal.setText("Tanggal : " + tanggal);
     }
-    public void tampil_jam(){
-            // Membuat sebuah ActionListener untuk menjalankan tugas yang akan dieksekusi setiap detik
-            ActionListener taskPerformer = (ActionEvent evt) -> {
-                
-            // Deklarasi variabel untuk menambahkan angka nol di depan angka jam, menit, dan detik (jika kurang dari 10)
-            String nol_jam = "", nol_menit = "", nol_detik = "";
-            
-            // Membuat objek Date untuk mendapatkan waktu saat ini
-            java.util.Date dateTime = new java.util.Date();
-            
-            // Mendapatkan nilai jam, menit, dan detik dari waktu saat ini
-            int nilai_jam = dateTime.getHours();
-            int nilai_menit = dateTime.getMinutes();
-            int nilai_detik = dateTime.getSeconds();
-            
-            // Menambahkan "0" di depan angka jam jika nilainya kurang dari atau sama dengan 9
-            if (nilai_jam <= 9) nol_jam = "0";
-            
-            // Menambahkan "0" di depan angka menit jika nilainya kurang dari atau sama dengan 9
-            if (nilai_menit <= 9) nol_menit = "0";
-            
-            // Menambahkan "0" di depan angka detik jika nilainya kurang dari atau sama dengan 9
-            if (nilai_detik <= 9) nol_detik = "0";
-            
-            // Menggabungkan angka nol dengan nilai jam untuk membentuk format "hh"
-            String jam = nol_jam + Integer.toString(nilai_jam);
-            
-            // Menggabungkan angka nol dengan nilai menit untuk membentuk format "mm"
-            String menit = nol_menit + Integer.toString(nilai_menit);
-            
-            // Menggabungkan angka nol dengan nilai detik untuk membentuk format "ss"
-            String detik = nol_detik + Integer.toString(nilai_detik);
-            
-            // Mengatur teks pada label `lbWaktu` dengan format waktu "Waktu : hh:mm:ss"
-            lbWaktu.setText("Waktu : " + jam + ":" + menit + ":" + detik);
-        };
-        // Membuat timer yang akan menjalankan ActionListener setiap 1000 milidetik (1 detik)
-        new Timer(1000, taskPerformer).start();
+    public void tampil_jam() {
+            // Membuat timer untuk memperbarui waktu setiap detik
+            Timer timer = new Timer(1000, (ActionEvent evt) -> {
+                // Mendapatkan waktu saat ini
+                LocalTime waktuSekarang = LocalTime.now();
+
+                // Mengatur format waktu
+                String jam = String.format("%02d", waktuSekarang.getHour());
+                String menit = String.format("%02d", waktuSekarang.getMinute());
+                String detik = String.format("%02d", waktuSekarang.getSecond());
+
+                // Mengatur teks pada label `lbWaktu` dengan format waktu "Waktu : hh:mm:ss"
+                lbWaktu.setText("Waktu : " + jam + ":" + menit + ":" + detik);
+            });
+
+            // Memulai timer
+            timer.start();
     }   
     
     /**
@@ -138,6 +118,7 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         tabel = new javax.swing.JTable();
         lbTanggal = new javax.swing.JLabel();
         lbWaktu = new javax.swing.JLabel();
+        btnMuatData = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
@@ -180,7 +161,7 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         jPanel1.add(txtNominal, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 180, 371, -1));
 
         comboJenisTransaksi.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        comboJenisTransaksi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-- Pilih --", "Pemasukan", "Pengeluaran" }));
+        comboJenisTransaksi.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Pemasukan", "Pengeluaran" }));
         comboJenisTransaksi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 comboJenisTransaksiActionPerformed(evt);
@@ -295,6 +276,17 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         lbWaktu.setText("Waktu");
         jPanel1.add(lbWaktu, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 20, 108, -1));
 
+        btnMuatData.setBackground(new java.awt.Color(51, 51, 255));
+        btnMuatData.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnMuatData.setForeground(new java.awt.Color(255, 255, 255));
+        btnMuatData.setText("Muat Data");
+        btnMuatData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMuatDataActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnMuatData, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 500, -1, -1));
+
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 52, 560, 550));
 
         jPanel4.setBackground(new java.awt.Color(51, 153, 255));
@@ -369,53 +361,83 @@ public class KeuanganPribadi extends javax.swing.JFrame {
     }//GEN-LAST:event_btnExportActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
-        // Mendapatkan model tabel yang digunakan untuk mengelola data
-        DefaultTableModel model = (DefaultTableModel) tabel.getModel();
+        try {
+                // Mendapatkan model tabel yang digunakan untuk mengelola data
+                DefaultTableModel model = (DefaultTableModel) tabel.getModel();
 
-        // Mendapatkan indeks baris yang dipilih di tabel
-        int selectedRow = tabel.getSelectedRow(); // Mengambil indeks baris yang dipilih oleh pengguna
+                // Mendapatkan indeks baris yang dipilih di tabel
+                int selectedRow = tabel.getSelectedRow(); // Mengambil indeks baris yang dipilih oleh pengguna
 
-        // Mengecek apakah ada kolom yang kosong
-        if (txtNamaTransaksi.getText().trim().equals("") || dateChooser.getDate() == null 
-            || comboJenisTransaksi.getSelectedItem() == null || txtNominal.getText().trim().equals("") 
-            || areaKeterangan.getText().trim().equals("")) {
+                // Mengecek apakah ada kolom yang kosong
+                if (txtNamaTransaksi.getText().trim().equals("") || dateChooser.getDate() == null
+                    || comboJenisTransaksi.getSelectedItem() == null || txtNominal.getText().trim().equals("")
+                    || areaKeterangan.getText().trim().equals("")) {
 
-            // Validasi khusus jika kategori resep belum dipilih
-            if (comboJenisTransaksi.getSelectedItem().toString().equals("-- Pilih --")) {
-                JOptionPane.showMessageDialog(null, "Silakan pilih jenis transaksi terlebih dahulu!");
-            } else {
-                // Jika ada kolom lainnya yang kosong, tampilkan pesan peringatan
-                JOptionPane.showMessageDialog(null, "Data Yang Anda Masukkan Belum Lengkap! Silahkan Ulangi Lagi!");
+                    // Validasi khusus jika kategori belum dipilih
+                    if (comboJenisTransaksi.getSelectedItem().toString().equals("-- Pilih --")) {
+                        JOptionPane.showMessageDialog(null, "Silakan pilih jenis transaksi terlebih dahulu!");
+                    } else {
+                        // Jika ada kolom lainnya yang kosong, tampilkan pesan peringatan
+                        JOptionPane.showMessageDialog(null, "Data Yang Anda Masukkan Belum Lengkap! Silahkan Ulangi Lagi!");
+                    }
+                } else {
+                    // Jika ada baris yang dipilih (edit mode)
+                    if (selectedRow != -1) {
+                        // Mengubah data pada baris yang dipilih
+                        model.setValueAt(txtNamaTransaksi.getText(), selectedRow, 0);          // Kolom 1: Nama Transaksi
+                        model.setValueAt(dateChooser.getDate(), selectedRow, 1);              // Kolom 2: Tanggal
+                        model.setValueAt(comboJenisTransaksi.getSelectedItem().toString(), selectedRow, 2); // Kolom 3: Jenis Transaksi
+                        model.setValueAt(txtNominal.getText(), selectedRow, 3);                // Kolom 4: Nominal
+                        model.setValueAt(areaKeterangan.getText(), selectedRow, 4);             // Kolom 5: Keterangan
+
+                        JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Diubah");
+                    } else {
+                        // Jika tidak ada baris yang dipilih, tambahkan baris baru
+                        model.addRow(new Object[]{
+                            txtNamaTransaksi.getText(), // Menambahkan Nama Transaksi
+                            dateChooser.getDate(),      // Menambahkan Tanggal
+                            comboJenisTransaksi.getSelectedItem().toString(), // Menambahkan Jenis Transaksi
+                            txtNominal.getText(),       // Menambahkan Nominal
+                            areaKeterangan.getText()    // Menambahkan Keterangan
+                        });
+
+                        JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Disimpan");
+                    }
+
+                    // Simpan data tabel ke file setelah perubahan
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter("dataKeuangan.txt"))) {
+                        int rowCount = model.getRowCount();
+                        int columnCount = model.getColumnCount();
+
+                        // Tulis header kolom ke file
+                        for (int col = 0; col < columnCount; col++) {
+                            writer.write(model.getColumnName(col));
+                            if (col < columnCount - 1) {
+                                writer.write("\t");
+                            }
+                        }
+                        writer.newLine();
+
+                        // Tulis data baris ke file
+                        for (int row = 0; row < rowCount; row++) {
+                            for (int col = 0; col < columnCount; col++) {
+                                writer.write(model.getValueAt(row, col).toString());
+                                if (col < columnCount - 1) {
+                                    writer.write("\t");
+                                }
+                            }
+                            writer.newLine();
+                        }
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat menyimpan file: " + ex.getMessage());
+                    }
+
+                    // Menghapus data yang ada di form setelah data dimasukkan ke tabel
+                    hapus(); // Fungsi hapus() mengatur ulang form, membersihkan semua input pengguna
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + ex.getMessage());
             }
-        } else {
-            // Jika ada baris yang dipilih (edit mode)
-            if (selectedRow != -1) {
-                // Mengubah data pada baris yang dipilih
-                model.setValueAt(txtNamaTransaksi.getText(), selectedRow, 0);          // Kolom 1: Nama Transaksi
-                model.setValueAt(dateChooser.getDate(), selectedRow, 1);              // Kolom 2: Tanggal
-                model.setValueAt(comboJenisTransaksi.getSelectedItem().toString(), selectedRow, 2); // Kolom 3: Jenis Transaksi
-                model.setValueAt(txtNominal.getText(), selectedRow, 3);                // Kolom 4: Nominal
-                model.setValueAt(areaKeterangan.getText(), selectedRow, 4);             // Kolom 5: Keterangan
-
-                // Menampilkan pesan konfirmasi bahwa data keuangan berhasil diubah
-                JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Diubah");
-            } else {
-                // Jika tidak ada baris yang dipilih, tambahkan baris baru
-                model.addRow(new Object[]{
-                    txtNamaTransaksi.getText(), // Menambahkan Nama Transaksi
-                    dateChooser.getDate(),      // Menambahkan Tanggal
-                    comboJenisTransaksi.getSelectedItem().toString(), // Menambahkan Jenis Transaksi
-                    txtNominal.getText(),       // Menambahkan Nominal
-                    areaKeterangan.getText()    // Menambahkan Keterangan
-                });
-
-                // Menampilkan pesan konfirmasi bahwa data keuangan berhasil disimpan
-                JOptionPane.showMessageDialog(null, "Data Keuangan Berhasil Disimpan");
-            }
-
-            // Menghapus data yang ada di form setelah data dimasukkan ke tabel
-            hapus(); // Fungsi hapus() mengatur ulang form, membersihkan semua input pengguna
-        }
 
 
 
@@ -489,7 +511,6 @@ public class KeuanganPribadi extends javax.swing.JFrame {
 
             // Memeriksa apakah ada baris yang dipilih
             if (selectedRows.length == 0) { // Jika tidak ada baris yang dipilih, array selectedRows kosong
-                // Menampilkan pesan untuk meminta pengguna memilih data yang ingin dihapus
                 JOptionPane.showMessageDialog(null, "Pilih data keuangan yang ingin dihapus!");
                 return; // Keluar dari fungsi jika tidak ada baris yang dipilih
             }
@@ -503,16 +524,43 @@ public class KeuanganPribadi extends javax.swing.JFrame {
             );
 
             // Memeriksa apakah pengguna memilih "Yes" (setuju untuk menghapus)
-            if (confirm == JOptionPane.YES_OPTION) { // Jika pengguna memilih Yes
+            if (confirm == JOptionPane.YES_OPTION) { 
                 // Menghapus baris yang dipilih, dimulai dari baris terakhir untuk menghindari masalah pergeseran indeks
                 for (int i = selectedRows.length - 1; i >= 0; i--) {
-                    int selectedRow = selectedRows[i]; // Mendapatkan indeks baris yang dipilih
+                    int selectedRow = selectedRows[i];
                     model.removeRow(selectedRow); // Menghapus baris yang dipilih dari model tabel
                 }
 
-                // Menampilkan pesan konfirmasi bahwa data telah berhasil dihapus
-                JOptionPane.showMessageDialog(null, "Data keuangan berhasil dihapus");
-            } // Jika pengguna memilih "No", maka penghapusan dibatalkan (tidak ada aksi lanjutan)
+                // Perbarui file setelah penghapusan
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("dataKeuangan.txt"))) {
+                    int rowCount = model.getRowCount();
+                    int columnCount = model.getColumnCount();
+
+                    // Tulis header kolom ke file
+                    for (int col = 0; col < columnCount; col++) {
+                        writer.write(model.getColumnName(col));
+                        if (col < columnCount - 1) {
+                            writer.write("\t");
+                        }
+                    }
+                    writer.newLine();
+
+                    // Tulis ulang data tabel yang tersisa ke file
+                    for (int row = 0; row < rowCount; row++) {
+                        for (int col = 0; col < columnCount; col++) {
+                            writer.write(model.getValueAt(row, col).toString());
+                            if (col < columnCount - 1) {
+                                writer.write("\t");
+                            }
+                        }
+                        writer.newLine();
+                    }
+
+                    JOptionPane.showMessageDialog(null, "Data keuangan berhasil dihapus dan file diperbarui");
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat memperbarui file: " + ex.getMessage());
+                }
+            }
     // TODO add your handling code here:
     }//GEN-LAST:event_btnHapusActionPerformed
 
@@ -582,6 +630,38 @@ public class KeuanganPribadi extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_comboJenisTransaksiActionPerformed
 
+    private void btnMuatDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMuatDataActionPerformed
+            try (BufferedReader reader = new BufferedReader(new FileReader("D:\\Data Zimmie\\Kuliah\\Semester 5\\PEMROGRAMAN BERBASIS OBJEK 2\\Latihan\\Gt-M-Zimmie-Hidayatullah_2210010588_UTS\\Aplikasi Keuangan Pribadi\\dataKeuangan.txt"))) {
+            String line;
+            DefaultTableModel tableModel = (DefaultTableModel) tabel.getModel(); 
+            tableModel.setRowCount(0); // Hapus semua data sebelumnya
+
+            // Baca header (baris pertama) dan abaikan
+            line = reader.readLine(); // Membaca header
+            if (line == null) { // Jika file kosong (tidak ada header)
+                JOptionPane.showMessageDialog(this, "Data belum ada dalam file!");
+                return; // Keluar dari fungsi
+            }
+
+            // Baca data baris demi baris
+            boolean dataFound = false; // Indikator apakah data ditemukan
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\t"); // Pisahkan berdasarkan tab
+                tableModel.addRow(parts); // Tambahkan ke tabel
+                dataFound = true; // Set true jika ada data
+            }
+
+            if (!dataFound) { // Jika tidak ada data setelah header
+                JOptionPane.showMessageDialog(this, "Data belum ada dalam file!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Data berhasil dimuat dari file TXT!");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+         // TODO add your handling code here:
+    }//GEN-LAST:event_btnMuatDataActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -624,6 +704,7 @@ public class KeuanganPribadi extends javax.swing.JFrame {
     private javax.swing.JButton btnHapus;
     private javax.swing.JButton btnImport;
     private javax.swing.JButton btnKeluar;
+    private javax.swing.JButton btnMuatData;
     private javax.swing.JButton btnSimpan;
     private javax.swing.JButton btnUbah;
     private javax.swing.JComboBox<String> comboJenisTransaksi;
